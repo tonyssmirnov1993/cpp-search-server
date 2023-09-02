@@ -5,12 +5,16 @@ using namespace std;
 
 int main() {
 	string query;
+	string word;
 	getline(cin, query);
 	for (int i = 0; i < query.size(); ++i) {
+		if (query[i] != ' ') {
+			word += query[i];
+		}
 		if (query[i] == ' ') {
-			cout << i << endl;
+			cout << "["s << word << "]" << endl;
+			word = ""s;
 		}
 	}
-	cout << query.size() << endl;
+	cout << "["s << word << "]" << endl;
 }
-// выведите все индексы символов, следующие за словами
