@@ -19,4 +19,8 @@ int main() {
     for (const auto& [term, freq] : ComputeTermFreqs(terms)) {
         cout << term << " x "s << freq << endl;
     }
+    // вывод:
+    // class x 1
+    // first x 2
+    // time x 1
 }
