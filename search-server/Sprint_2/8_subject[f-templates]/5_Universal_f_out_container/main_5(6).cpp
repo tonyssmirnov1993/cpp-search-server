@@ -5,27 +5,44 @@
 #include <vector>
 
 using namespace std;
+                    //Print element
 template <typename Container>
-auto Print(ostream& out, const Container& container) {
+ostream& Print(ostream& out, const Container& container) {
     bool is_first = true;
     for (const auto& element : container) {
         if (!is_first) {
             out << ", "s;
         }
-        else {
-            is_first = false;
+        else {    
+            is_first = false;  
         }  
         out << element;
     }
+    return out;
 }
+                    //Ğ¿ĞµÑ€ĞµĞ³Ñ€ÑƒĞ· Ñ„ÑƒĞ½ĞºÑ†Ğ¸Ğ¸ print Ğ´Ğ»Ñ ÑĞ»ÑƒÑ‡Ğ°Ñ Ñ map
+template <typename Key, typename Value>
+ostream& Print(ostream& out, const map<Key, Value>& container) {
+    bool is_first = true;
+    for (const auto& [key, value] : container) {
+        if (!is_first) {
+            out <<  ", "s << "("s << key << ", "s << value << ")"s;
+        } else {
+            out << "("s << key << ", "s << value << ")"s;
+            is_first = false;
+        }      
+    }
+    return out;
+}
+                        //---===VECTOR===---
 template <typename Element>
-
 ostream& operator<<(ostream& out, const vector<Element>& container) {
     cout << "["s;
     Print(out, container);
     cout << "]"s;
     return out;
-}  
+} 
+                        //---===SET===---
 template <typename Element>
 ostream& operator<<(ostream& out, const set<Element>& container) {
    cout << "{"s;
@@ -33,34 +50,25 @@ ostream& operator<<(ostream& out, const set<Element>& container) {
    cout << "}"s;
    return out;
 }  
-
-template <typename Element, typename Container>
-ostream& operator<<(ostream& out, const map<Element, Container>& container) {
+                        //---===MAP===---
+template <typename Key, typename Value>
+ostream& operator<<(ostream& out, const map<Key, Value>& container) {
     cout << "<"s;
-    bool is_first = true;
-    for (const auto& [key, value] : container) {
-        if (!is_first){
-            cout <<  ", "s << "("s << key << ", "s << value << ")"s;
-        } else {
-            cout << "("s << key << ", "s << value << ")"s;
-            is_first = false;
-        }
-    }
+    Print(out, container);
     cout << ">"s;
     return out;
 }  
 
-
 int main() {
-    const set<string> cats = {"Ìóğêà"s, "Áåëêà"s, "Ãåîğãèé"s, "Ğşğèê"s};
+    const set<string> cats = {"ĞœÑƒÑ€ĞºĞ°"s, "Ğ‘ĞµĞ»ĞºĞ°"s, "Ğ“ĞµĞ¾Ñ€Ğ³Ğ¸Ğ¹"s, "Ğ ÑÑ€Ğ¸Ğº"s};
     cout << cats << endl; 
     const vector<int> ages = {10, 5, 2, 12};
     cout << ages << endl; 
     const map<string, int> cat_ages = {
-                                            {"Ìóğêà"s, 10}, 
-                                            {"Áåëêà"s, 5},
-                                            {"Ãåîğãèé"s, 2}, 
-                                            {"Ğşğèê"s, 12}
+                                            {"ĞœÑƒÑ€ĞºĞ°"s, 10}, 
+                                            {"Ğ‘ĞµĞ»ĞºĞ°"s, 5},
+                                            {"Ğ“ĞµĞ¾Ñ€Ğ³Ğ¸Ğ¹"s, 2}, 
+                                            {"Ğ ÑÑ€Ğ¸Ğº"s, 12}
     };
     cout << cat_ages << endl; 
     return 0;
