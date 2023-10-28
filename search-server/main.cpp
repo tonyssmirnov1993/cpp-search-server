@@ -103,12 +103,6 @@ public:
             [](int document_id, const DocumentStatus& status, int rating)
             {return status == DocumentStatus::ACTUAL; });
     }
-    //---===перегруз FIND_TOP_DOC==---
-    vector<Document> FindTopDocuments(const string& raw_query, DocumentStatus status) const {
-        return FindTopDocuments(raw_query,
-            [&status](int document_id, DocumentStatus status_new, int rating)
-            {return status_new == status; });
-    }
 
     int GetDocumentCount() const {
         return documents_.size();
