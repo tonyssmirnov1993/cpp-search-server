@@ -124,7 +124,7 @@ public:
         return documents_id_.at(index); //был throw out_of_range(); //id_[index]
     }
 
- 
+
 
     template <typename DocumentPredicate>
     vector<Document> FindTopDocuments(const string& raw_query,
@@ -238,7 +238,7 @@ private:
 
     QueryWord ParseQueryWord(string text) const {
         //устранили дублирование кода и реализовали инкапсул€цию //был в FidndTopDoc
-        if (!IsValidWord(text)){
+        if (!IsValidWord(text)) {
             throw invalid_argument("некорректный запрос"s);
         }
         bool is_minus = false;
@@ -275,13 +275,13 @@ private:
 
     bool ValidQuery(const Query& query) const {
         for (const string& word : query.plus_words) {
-            if ((!IsValidWord(word)) || (word[word.size() - 1] == '-')) {
+            if (word[word.size() - 1] == '-') {
                 return false;
             }
         }
 
         for (const string& word : query.minus_words) {
-            if ((word == "") || (!IsValidWord(word)) || (word[0] == '-') || (word[word.size() - 1] == '-')) {
+            if ((word == "") || (word[0] == '-') || (word[word.size() - 1] == '-')) {
                 return false;
             }
         }
@@ -337,7 +337,7 @@ void PrintDocument(const Document& document) {
         << "rating = "s << document.rating << " }"s << endl;
 }
 int main() {
-    setlocale(LC_ALL,"RUS");
+    setlocale(LC_ALL, "RUS");
     try {
         SearchServer test_constructor1("и в н\tа"s);
     }
