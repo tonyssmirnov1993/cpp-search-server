@@ -88,7 +88,7 @@ public:
         : stop_words_(MakeUniqueNonEmptyStrings(stop_words)) {
         if (!(all_of(stop_words_.begin(), stop_words_.end(), [](string s)
             {return IsValidWord(s); }))) {
-            throw invalid_argument("РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ Р·Р°РїСЂРѕСЃ"s);
+            throw invalid_argument("Некорректный запрос"s);
         }
     }
 
@@ -101,15 +101,15 @@ public:
     void AddDocument(int document_id, const string& document, DocumentStatus status,
         const vector<int>& ratings) {
         if (document_id < 0) {
-            throw invalid_argument("РќРµРІРµСЂРЅС‹Р№ id РґРѕРєСѓРјРµРЅС‚Р°"s);
+            throw invalid_argument("Неверный id документа"s);
         }
         if (count(documents_id_.begin(), documents_id_.end(), document_id) != 0) {
-            throw invalid_argument("Р”РѕРєСѓРјРµРЅС‚ СѓР¶Рµ РґРѕР±Р°РІР»РµРЅ"s);
+            throw invalid_argument("Документ уже добавлен"s);
         }
         const vector<string> words = SplitIntoWordsNoStop(document);
         for (const string& word : words) {
             if (!IsValidWord(word)) {
-                throw invalid_argument("Р”РѕРєСѓРјРµРЅС‚ СЃРѕРґРµСЂР¶РёС‚ РЅРµРґРѕРїСѓСЃС‚РёРјС‹Рµ СЃРїРµС†.СЃРёРјРІРѕР»С‹"s);
+                throw invalid_argument("Документ содержит недопустимые спец.символы"s);
             }
         }
         const double inv_word_count = 1.0 / words.size();
@@ -121,21 +121,16 @@ public:
     }
 
     int GetDocumentId(int index) {
-        if (index > documents_id_.size()) {
-            throw out_of_range("РќРµРІРµСЂРЅС‹Р№ РёРЅРґРµРєСЃ РґРѕРєСѓРјРµРЅС‚Р°"s);
-        }
-
-        return documents_id_[index];
+        return documents_id_.at(index); //был throw out_of_range(); //id_[index]
     }
+
+ 
 
     template <typename DocumentPredicate>
     vector<Document> FindTopDocuments(const string& raw_query,
         DocumentPredicate document_predicate) const {
         const Query query = ParseQuery(raw_query);
 
-        if (ValidQuery(query) == false) {
-            throw invalid_argument("РїРѕРёСЃРєРѕРІС‹Р№ Р·Р°РїСЂРѕСЃ СЃРѕРґРµСЂР¶РёС‚ РЅРµРґРѕРїСѓСЃС‚РёРјС‹Рµ СЃРїРµС†.СЃРёРјРІРѕР»С‹"s);
-        }
         auto matched_documents = FindAllDocuments(query, document_predicate);
 
         sort(matched_documents.begin(), matched_documents.end(),
@@ -171,9 +166,6 @@ public:
     tuple<vector<string>, DocumentStatus> MatchDocument(const string& raw_query, int document_id) const {
         const Query query = ParseQuery(raw_query);
 
-        if (!ValidQuery(query)) {
-            throw invalid_argument("РїРѕРёСЃРєРѕРІС‹Р№ Р·Р°РїСЂРѕСЃ СЃРѕРґРµСЂР¶РёС‚ РЅРµРґРѕРїСѓСЃС‚РёРјС‹Рµ СЃРїРµС†.СЃРёРјРІРѕР»С‹"s);
-        }
         vector<string> matched_words;
         for (const string& word : query.plus_words) {
             if (word_to_document_freqs_.count(word) == 0) {
@@ -209,7 +201,7 @@ private:
     static bool IsValidWord(const string& word) {
         // A valid word must not contain special characters
         return none_of(word.begin(), word.end(), [](char c) {
-            return c >= '\0' && c < ' ';//ASCII РєРѕРґС‹ СЃРёРјРІРѕР»РѕРІ РѕС‚ 0 РґРѕ 31
+            return c >= '\0' && c < ' ';//ASCII коды символов от 0 до 31
             });
     }
 
@@ -245,8 +237,9 @@ private:
     };
 
     QueryWord ParseQueryWord(string text) const {
-        if (!IsValidWord(text)) {
-            throw invalid_argument("РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ Р·Р°РїСЂРѕСЃ"s);
+        //устранили дублирование кода и реализовали инкапсуляцию //был в FidndTopDoc
+        if (!IsValidWord(text)){
+            throw invalid_argument("некорректный запрос"s);
         }
         bool is_minus = false;
         if (text[0] == '-') {
@@ -275,7 +268,7 @@ private:
             }
         }
         if (ValidQuery(query) == false) {
-            throw invalid_argument("РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ Р·Р°РїСЂРѕСЃ"s);
+            throw invalid_argument("Некорректный запрос"s);
         }
         return query;
     }
@@ -335,7 +328,7 @@ private:
     }
 };
 
-// ==================== РґР»СЏ РїСЂРёРјРµСЂР° =========================
+// ==================== для примера =========================
 
 void PrintDocument(const Document& document) {
     cout << "{ "s
@@ -346,18 +339,18 @@ void PrintDocument(const Document& document) {
 int main() {
     setlocale(LC_ALL,"RUS");
     try {
-        SearchServer test_constructor1("Рё РІ РЅ\tР°"s);
+        SearchServer test_constructor1("и в н\tа"s);
     }
     catch (const invalid_argument& test) {
-        cerr << "РўРµСЃС‚ 1: РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ: " << test.what() << endl;
+        cerr << "Тест 1: конструктор: " << test.what() << endl;
     }
 
     try {
-        vector<string> test_stop_words{ "Рё\t", "РІ"s, "РЅР°"s };
+        vector<string> test_stop_words{ "и\t", "в"s, "на"s };
         SearchServer test_constuctor2(test_stop_words);
     }
     catch (const invalid_argument& test) {
-        cerr << "РўРµСЃС‚ 2: РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ: " << test.what() << endl;
+        cerr << "Тест 2: конструктор: " << test.what() << endl;
     }
-    SearchServer search_server("Рё РІ РЅР°"s);
+    SearchServer search_server("и в на"s);
 }
